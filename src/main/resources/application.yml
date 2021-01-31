@@ -1,0 +1,18 @@
+spring:
+  main:
+    web-application-type: servlet
+  application:
+    name: Weather
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+      write_dates_as_timestamps: false
+  profiles:
+    active: prod
+logging:
+  level:
+    com.kiteclub.weather: INFO
+    org.hibernate: ERROR
+    org.springframework: INFO
+server:
+  port: 2828

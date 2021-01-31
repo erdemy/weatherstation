@@ -1,0 +1,21 @@
+app:
+  rest:
+    connectionRequestTimeout: 500
+    connectTimeout: 1000
+    readTimeout: 30000
+  arduino:
+    server: "http://192.168.1.5/"
+  windguru:
+    url: "http://www.windguru.cz/upload/api.php"
+    stationId: "id"
+    password: "password"
+  windy:
+    url: "https://stations.windy.com/pws/update/"
+    apiKey: "apiKey"
+  windyapp:
+    url: "https://windyapp.co/apiV9.php"
+    secret: "apiKey"
+  pswWeather:
+    url: "https://pwsupdate.pwsweather.com/api/v1/submitwx"
+    stationId: "id"
+    apiKey: "apiKey"
