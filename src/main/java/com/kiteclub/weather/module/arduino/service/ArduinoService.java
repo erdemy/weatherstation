@@ -3,8 +3,10 @@ package com.kiteclub.weather.module.arduino.service;
 import static org.springframework.http.HttpMethod.GET;
 
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -14,20 +16,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Created by Erdem Yilmaz.
+ * fast and furios implementation that quality is not a case right now ;)
  */
 @Component
 @Slf4j
 public class ArduinoService {
     @Value("${app.arduino.server}")
     public String ARDUINO_SERVER;
+
     // ************ Windguru variables *********
-    // Create Instance of HashFunction (MD5)
+    // Create Instance of HashFunction (MD5) - windguru only supports MD5
     private static final HashFunction hashFunction = Hashing.md5();
 
     @Value("${app.windguru.url}")
@@ -71,29 +76,22 @@ public class ArduinoService {
         this.restTemplate = restTemplate;
     }
 
-    public void getData(ZonedDateTime time) {
+    @Async
+    public void sendData(Weather data) throws InterruptedException {
         try {
-            //Weather data = restTemplate.getForObject(ARDUINO_SERVER, Weather.class);
-            Weather data = new Weather();
-            data.setResult("c180s003g006t063r000p000h88b10038*3");
+            // current date in UTC+3, no matter what the JVM default timezone is
+            ZonedDateTime time = ZonedDateTime.now(ZoneOffset.ofHours(3)).truncatedTo(ChronoUnit.SECONDS);
 
-            //System.out.println("Data:" + data.getResult());
             if (data.isDataValid()) {
-                /*System.out.println("getWindDirection:" + data.getWindDirection());
-                System.out.println("getWindSpeedAverage:" + data.getWindSpeedAverage());
-                System.out.println("getWindSpeedMax:" + data.getWindSpeedMax());
-                System.out.println("getTemperature:" + data.getTemperature());
-                System.out.println("getRainfallOneHour:" + data.getRainfallOneHour());
-                System.out.println("getRainfallOneDay:" + data.getRainfallOneDay());
-                System.out.println("getHumidity:" + data.getHumidity());
-                System.out.println("getBarPressure:" + data.getBarPressure());*/
                 long salt = time.toInstant().toEpochMilli();
                 System.out.println(salt + "," + data.getResult());
-
+/*
                 sendDataToWindGuru(data, time);
                 sendDataToWindy(data, time);
                 sendDataToWindyApp(data, time);
                 sendDataToPswWeather(data, time);
+
+ */
             }
             log.debug("Time {}, Result value {}", time, data.getResult());
         } catch (Exception exp) {
@@ -226,7 +224,7 @@ public class ArduinoService {
     }
 
     /**
-     * https://windyapp.co/apiV9.php?method=addCustomMeteostation&secret=456HJHlfcyg89&d5=123&a=11&m=10&g=15&p=200
+     * https://windyapp.co/apiV9.php?method=addCustomMeteostation&secret=xxx&d5=123&a=11&m=10&g=15&p=200
      * &te2=20&i=test1
      * //d5* - direction from 0 to 1024. direction in degrees is equal = (d5/1024)*360
      * //accum - external potential. should be divided by 10 to convert into voltage

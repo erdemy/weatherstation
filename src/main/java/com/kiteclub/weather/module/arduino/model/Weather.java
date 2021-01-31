@@ -9,6 +9,7 @@ import lombok.Data;
 /**
  * https://wiki.dfrobot.com/Weather_Station_with_Anemometer_Wind_vane_Rain_bucket_SKU_SEN0186
  * c000s000g000t086r000p000h53b10020
+ * c180s003g006t063r000p000h88b10038
  * It outputs 37 bytes per second, including the end CR/LF.
  * <p>
  * Data Parser:
