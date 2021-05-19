@@ -36,6 +36,7 @@ public class ArduinoResource {
         Weather weatherData = new Weather();
         weatherData.setResult(value);
         log.debug("Raw data:" + value);
+        //System.out.println("Value:" + value);
         arduinoService.sendData(weatherData);
         return ResponseEntity
                 .ok().body("ok");

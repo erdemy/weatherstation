@@ -70,7 +70,7 @@ public class Weather {
     }
 
     /**
-     * convert miles/sec to knots/sec for 1 minute average wind spped
+     * convert miles/sec to knots/sec for 1 minute average wind speed
      *
      * @return one minute average speed
      */
@@ -78,8 +78,30 @@ public class Weather {
         return windSpeedOneMinuteMs * 0.8689762;
     }
 
+    /**
+     * convert miles/sec to meter/sec for 1 minute average wind speed
+     *
+     * @return one minute average speed
+     */
+    public double getWindSpeedAverageMeters() {
+        return windSpeedOneMinuteMs * 0.44704;
+    }
+
+
     public double getWindSpeedMax() {
         return windSpeedFiveMinutesMs * 0.8689762;
+    }
+
+    public double getWindSpeedMaxMeters() {
+        return windSpeedFiveMinutesMs * 0.44704;
+    }
+
+    public double getRainfallOneHourInches100() {
+        return rainfallOneHourInches / 100;
+    }
+
+    public double getRainfallOneDayInches100() {
+        return rainfallOneDayInches / 100;
     }
 
     //Temperature ("C")
@@ -101,5 +123,10 @@ public class Weather {
     //Barometric Pressure
     public double getBarPressure() {
         return pressureHpa / 10.00;
+    }
+
+    //Barometric Pressure inch
+    public double getBarPressureInch() {
+        return pressureHpa / 338.6;
     }
 }

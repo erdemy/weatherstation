@@ -85,13 +85,13 @@ public class ArduinoService {
             if (data.isDataValid()) {
                 long salt = time.toInstant().toEpochMilli();
                 System.out.println(salt + "," + data.getResult());
-/*
+
                 sendDataToWindGuru(data, time);
                 sendDataToWindy(data, time);
                 sendDataToWindyApp(data, time);
                 sendDataToPswWeather(data, time);
 
- */
+
             }
             log.debug("Time {}, Result value {}", time, data.getResult());
         } catch (Exception exp) {
@@ -204,12 +204,12 @@ public class ArduinoService {
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(WINDY_BASE_URL + WINDY_API_KEY)
                     .queryParam("tempf", data.getTemperatureFahrenheit())
-                    .queryParam("wind", data.getWindSpeedOneMinuteMs())
+                    .queryParam("wind", data.getWindSpeedAverageMeters())
                     .queryParam("winddir", data.getWindDirection())
-                    .queryParam("gust", data.getWindSpeedFiveMinutesMs())
+                    .queryParam("gust", data.getWindSpeedMaxMeters())
                     .queryParam("rh", data.getHumidity())
                     .queryParam("mbar", data.getBarPressure())
-                    .queryParam("rainin", data.getRainfallOneHourInches());
+                    .queryParam("rainin", data.getRainfallOneHourInches100());
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             HttpEntity<String> response = restTemplate.exchange(
@@ -330,9 +330,9 @@ public class ArduinoService {
                     .queryParam("windspeedmph", data.getWindSpeedOneMinuteMs())
                     .queryParam("windgustmph", data.getWindSpeedFiveMinutesMs())
                     .queryParam("tempf", data.getTemperatureFahrenheit())
-                    .queryParam("rainin", data.getRainfallOneHourInches())
-                    .queryParam("dailyrainin", data.getRainfallOneDayInches())
-                    .queryParam("baromin", data.getBarPressure())
+                    .queryParam("rainin", data.getRainfallOneHourInches100())
+                    .queryParam("dailyrainin", data.getRainfallOneDayInches100())
+                    .queryParam("baromin", data.getBarPressureInch())
                     .queryParam("humidity", data.getHumidity())
                     .queryParam("softwaretype", "version1.0")
                     .queryParam("action", "updateraw");
