@@ -7,6 +7,7 @@ plugins {
 group = 'com.kiteclub'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '8'
+targetCompatibility = '8'
 
 configurations {
 	compileOnly {
@@ -25,9 +26,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.apache.httpcomponents:httpclient'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
-	implementation("com.google.guava:guava:30.0-jre")
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	implementation("com.google.guava:guava:31.1-jre")
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

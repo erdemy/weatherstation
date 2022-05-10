@@ -1,15 +1,19 @@
-#include <b64.h>
-#include <HttpClient.h>
+//#include <b64.h>
+//#include <HttpClient.h>
+#include <ArduinoHttpClient.h>
 
 //#include <SoftwareSerial.h>
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetClient.h>
+#include <SoftwareSerial.h>
+
+SoftwareSerial mySerial(8, 7); // RX, TX
 
 // assign a MAC address for the Ethernet controller.
 // fill in your address here:
 byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xED
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 // assign an IP address for the controller:
 IPAddress ip(192, 168, 1, 6);
@@ -22,7 +26,9 @@ EthernetClient client;
 const char kHostname[] = "35.225.243.115";
 // Path to download (this is the bit after the hostname in the URL
 // that you want to download
-const char kPath[] = "/api/data?s=";
+const char kPath[] = "/api/json?v=";
+
+HttpClient httpClient = HttpClient(client, kHostname, 2828);
 
 // Number of milliseconds to wait without receiving any data before we give up
 const int kNetworkTimeout = 30*1000;
@@ -35,29 +41,8 @@ unsigned long lastReadingTime = 0;              // last time weather data receiv
 long lastConnectionTime = 0;           // last time you connected to the server, in milliseconds
 const unsigned long postingInterval = 60000;  // delay between updates, in milliseconds
 
+String Data = "", lastData = "";
 char databuffer[35];
-char mydatabuffer[35] = "c180s003g006t063r000p000h88b10038";
-
-void getBuffer() //Get weather status data
-{
-  int index;
-  for (index = 0; index < 35; index ++)
-  {
-    if (Serial.available())
-    {
-      databuffer[index] = Serial.read();
-      if (databuffer[0] != 'c')
-      {
-        index = -1;
-      }
-    }
-    else
-    {
-      index --;
-    }
-  }
-  Serial.flush();
-}
 
 void setup() {
   // You can use Ethernet.init(pin) to configure the CS pin
@@ -79,6 +64,8 @@ void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
 
+  // set the data rate for the SoftwareSerial port
+  mySerial.begin(9600);
 
   while (!Serial && millis() < 30000) {
   ; // wait for serial port to connect. Needed for native USB port only
@@ -102,19 +89,37 @@ void setup() {
 }
 
 void loop() {
+  while (mySerial.available())
+  {
+      char character = mySerial.read(); // Receive a single character from the software serial port
+      Data.concat(character); // Add the received character to the receive buffer
+      if (character == '\n')
+      {
+          Serial.print("Received: ");
+          Serial.println(Data);
+
+          // Add your code to parse the received line here....
+
+          // Clear receive buffer so we're ready to receive the next line
+          if (Data.startsWith("{\"rt\":0", 0)) {
+            lastData = Data;
+          }
+          Data = "";
+      }
+  }
+/*
    if (millis() - lastReadingTime > 3000) {
     // if there's a reading ready, read it:
     // don't do anything until the data ready pin is high:
     //Serial.println(F("Getting reading"));
-    getBuffer();
+    //getBuffer();
     // timestamp the last time you got a reading:
     lastReadingTime = millis();
     // print the current readings, in HTML format:
-    Serial.write(databuffer, 35);
-    databuffer[35]='\0';
-    Serial.println();
+    //Serial.write(Data);
+    Serial.println(Data);
   }
-  
+  */
   // if there's incoming data from the net connection.
   // send it out the serial port.  This is for debugging
   // purposes only:
@@ -126,8 +131,12 @@ void loop() {
   // if ten seconds have passed since your last connection,
   // then connect again and send data:
   if (millis() - lastConnectionTime > postingInterval) {
-    //httpRequest();
-    lastConnectionTime = millis();
+    if (lastData != "") {
+      httpRequest();
+      Serial.println(F("sending data"));
+      Serial.println(lastData);
+      lastConnectionTime = millis();
+    }
   }
 }
 
@@ -136,11 +145,29 @@ void loop() {
 void httpRequest() {
   int err =0;
   // Serial.println(databuffer);
-    HttpClient http(client);
-    char buf[47] = "";
+  //  HttpClient http(client);
+  /*
+    char buf[lastData.length() + 13] = "";
     strcpy(buf, kPath);
-    strcpy(buf + strlen(kPath), databuffer);
+    lastData.replace("\"","%22");
+    strcpy(buf + strlen(kPath), lastData.c_str());
 
+Serial.println(buf);*/
+  String contentType = "application/json";
+
+  httpClient.post("/api/json", contentType, lastData);
+
+  // read the status code and body of the response
+  int statusCode = httpClient.responseStatusCode();
+  String response = httpClient.responseBody();
+
+  Serial.print("Status code: ");
+  Serial.println(statusCode);
+  Serial.print("Response: ");
+  Serial.println(response);
+
+
+/*
     err = http.get(kHostname, 2828, buf);
     if (err == 0)
     {
@@ -203,4 +230,5 @@ void httpRequest() {
       Serial.println(err);
     }
     http.stop();
+    */
 }

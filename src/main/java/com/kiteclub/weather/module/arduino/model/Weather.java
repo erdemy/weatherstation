@@ -7,6 +7,10 @@ import com.google.common.primitives.Ints;
 import lombok.Data;
 
 /**
+ * New Data format:
+ * {"rt":0,"t":24.22,"h":43.47,"p":101743.35,"l":0,"ws":0.00,"wa":8,"gs":0.00,"ga":9,"rmm":0.00,"ms":600053}
+ *
+ *
  * https://wiki.dfrobot.com/Weather_Station_with_Anemometer_Wind_vane_Rain_bucket_SKU_SEN0186
  * c000s000g000t086r000p000h53b10020
  * c180s003g006t063r000p000h88b10038
@@ -30,37 +34,49 @@ public class Weather {
     @JsonProperty("r")
     private String result;
 
-    private int windDirection;
-    private int windSpeedOneMinuteMs;
-    private int windSpeedFiveMinutesMs;
-    private int temperatureFahrenheit;
-    private int rainfallOneHourInches;
+    private double windDirection;
+    private double windSpeedOneMinuteMs;
+    private double windGustSpeedOneMinuteMs;
+    //private double windSpeedFiveMinutesMs;
+    private double temperatureCelsius;
+    /*private int rainfallOneHourInches;
     private int rainfallOneDayInches;
     private int humidity;
-    private int pressureHpa;
+    private int pressureHpa;*/
 
+    public void setWeatherData(WeatherData weatherData) {
+        temperatureCelsius = weatherData.getT();
+        windDirection = weatherData.getWa();
+        windDirection = (windDirection + 50) % 360;
+        windSpeedOneMinuteMs = weatherData.getWs() * 0.85;
+        windGustSpeedOneMinuteMs = weatherData.getGs() * 0.85;
+    }
+/*
     public void setResult(String result) {
         this.result = result;
         windDirection = getInt(result.substring(1, 4));
         windSpeedOneMinuteMs = getInt(result.substring(5, 8)) * 2;
         windSpeedFiveMinutesMs = getInt(result.substring(9, 12)) * 2;
-        temperatureFahrenheit = getInt(result.substring(13, 16));
+        //temperatureFahrenheit = getInt(result.substring(13, 16));
         rainfallOneHourInches = getInt(result.substring(17, 20));
         rainfallOneDayInches = getInt(result.substring(21, 24));
         humidity = getInt(result.substring(25, 27));
         pressureHpa = getInt(result.substring(28, 33));
-    }
+    }*/
 
     // "c000s000g000t078r000p000h87b10038*3"
     public boolean isDataValid() {
+        /*
         return result.charAt(0) == 'c' &&
                 result.charAt(4) == 's' &&
                 result.charAt(8) == 'g' &&
-                result.charAt(12) == 't' &&
-                result.charAt(16) == 'r' &&
-                result.charAt(20) == 'p' &&
-                result.charAt(24) == 'h' &&
-                result.charAt(27) == 'b';
+                result.charAt(12) == 't';
+                //&& result.charAt(16) == 'r' &&
+                //result.charAt(20) == 'p' &&
+                //result.charAt(24) == 'h' &&
+                //result.charAt(27) == 'b';
+         */
+        return temperatureCelsius != 0.0;
     }
 
     private int getInt(String input) {
@@ -70,12 +86,12 @@ public class Weather {
     }
 
     /**
-     * convert miles/sec to knots/sec for 1 minute average wind speed
+     * convert meter/sec to knots/sec for 1 minute average wind speed
      *
      * @return one minute average speed
      */
-    public double getWindSpeedAverage() {
-        return windSpeedOneMinuteMs * 0.8689762;
+    public double getWindSpeedAverageKnot() {
+        return windSpeedOneMinuteMs * 1.872;
     }
 
     /**
@@ -89,13 +105,15 @@ public class Weather {
 
 
     public double getWindSpeedMax() {
-        return windSpeedFiveMinutesMs * 0.8689762;
+        //return windSpeedFiveMinutesMs * 0.8689762;
+        return windGustSpeedOneMinuteMs * 1.872;
     }
 
     public double getWindSpeedMaxMeters() {
-        return windSpeedFiveMinutesMs * 0.44704;
+        //return windSpeedFiveMinutesMs * 0.44704;
+        return windGustSpeedOneMinuteMs;
     }
-
+/*
     public double getRainfallOneHourInches100() {
         return rainfallOneHourInches / 100;
     }
@@ -103,12 +121,13 @@ public class Weather {
     public double getRainfallOneDayInches100() {
         return rainfallOneDayInches / 100;
     }
+*/
 
-    //Temperature ("C")
-    public double getTemperatureCelsius() {
-        return (temperatureFahrenheit - 32) * 5.00 / 9.00;
+    public double getTemperatureFahrenheit() {
+        return (temperatureCelsius * 1.8) + 32;
     }
 
+    /*
     //Rainfall (1 hour)
     public double getRainfallOneHour() {
         return rainfallOneHourInches * 0.254;
@@ -119,7 +138,6 @@ public class Weather {
         return rainfallOneDayInches * 0.254;
     }
 
-
     //Barometric Pressure
     public double getBarPressure() {
         return pressureHpa / 10.00;
@@ -129,4 +147,5 @@ public class Weather {
     public double getBarPressureInch() {
         return pressureHpa / 338.6;
     }
+    */
 }

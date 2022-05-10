@@ -16,3 +16,5 @@ logging:
     org.springframework: INFO
 server:
   port: 2828
+  tomcat:
+    relaxed-query-chars: ['{','}']

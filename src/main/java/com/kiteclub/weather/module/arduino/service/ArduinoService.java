@@ -89,7 +89,7 @@ public class ArduinoService {
                 sendDataToWindGuru(data, time);
                 sendDataToWindy(data, time);
                 sendDataToWindyApp(data, time);
-                sendDataToPswWeather(data, time);
+                //sendDataToPswWeather(data, time);
 
 
             }
@@ -134,14 +134,14 @@ public class ArduinoService {
                     .queryParam("salt", salt)
                     .queryParam("hash", hash.toString())
                     .queryParam("interval", 60)
-                    .queryParam("wind_avg", data.getWindSpeedAverage())
+                    .queryParam("wind_avg", data.getWindSpeedAverageKnot())
                     .queryParam("wind_max", data.getWindSpeedMax())
                     .queryParam("wind_direction", data.getWindDirection())
                     .queryParam("temperature", data.getTemperatureCelsius())
-                    .queryParam("rh", data.getHumidity())
+                    /*.queryParam("rh", data.getHumidity())
                     .queryParam("mslp", data.getBarPressure())
                     .queryParam("precip", data.getRainfallOneHour())
-                    .queryParam("precip_interval", 3600);
+                    .queryParam("precip_interval", 3600)*/;
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             HttpEntity<String> response = restTemplate.exchange(
@@ -204,12 +204,12 @@ public class ArduinoService {
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(WINDY_BASE_URL + WINDY_API_KEY)
                     .queryParam("tempf", data.getTemperatureFahrenheit())
-                    .queryParam("wind", data.getWindSpeedAverageMeters())
+                    .queryParam("wind", data.getWindSpeedOneMinuteMs())
                     .queryParam("winddir", data.getWindDirection())
                     .queryParam("gust", data.getWindSpeedMaxMeters())
-                    .queryParam("rh", data.getHumidity())
+                    /*.queryParam("rh", data.getHumidity())
                     .queryParam("mbar", data.getBarPressure())
-                    .queryParam("rainin", data.getRainfallOneHourInches100());
+                    .queryParam("rainin", data.getRainfallOneHourInches100())*/;
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             HttpEntity<String> response = restTemplate.exchange(
@@ -261,10 +261,10 @@ public class ArduinoService {
                     .queryParam("d5", data.getWindDirection() * 2.84444)
                     .queryParam("a", data.getWindSpeedOneMinuteMs())
                     .queryParam("m", data.getWindSpeedOneMinuteMs())
-                    .queryParam("g", data.getWindSpeedFiveMinutesMs())
-                    .queryParam("p", data.getBarPressure())
+                    .queryParam("g", data.getWindGustSpeedOneMinuteMs())
+                    //.queryParam("p", data.getBarPressure())
                     .queryParam("te2", data.getTemperatureCelsius())
-                    .queryParam("h", data.getHumidity())
+                    //.queryParam("h", data.getHumidity())
                     .queryParam("i", "81KiteClub");
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
@@ -328,12 +328,12 @@ public class ArduinoService {
                     .queryParam("dateutc", time.format(formatter))
                     .queryParam("winddir", data.getWindDirection())
                     .queryParam("windspeedmph", data.getWindSpeedOneMinuteMs())
-                    .queryParam("windgustmph", data.getWindSpeedFiveMinutesMs())
+                    //.queryParam("windgustmph", data.getWindSpeedFiveMinutesMs())
                     .queryParam("tempf", data.getTemperatureFahrenheit())
-                    .queryParam("rainin", data.getRainfallOneHourInches100())
+                    /*.queryParam("rainin", data.getRainfallOneHourInches100())
                     .queryParam("dailyrainin", data.getRainfallOneDayInches100())
                     .queryParam("baromin", data.getBarPressureInch())
-                    .queryParam("humidity", data.getHumidity())
+                    .queryParam("humidity", data.getHumidity())*/
                     .queryParam("softwaretype", "version1.0")
                     .queryParam("action", "updateraw");
             HttpEntity<?> entity = new HttpEntity<>(headers);

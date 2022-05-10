@@ -5,10 +5,10 @@
 // assign a MAC address for the Ethernet controller.
 // fill in your address here:
 byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE
 };
 // assign an IP address for the controller:
-IPAddress ip(192, 168, 1, 5);
+IPAddress ip(192, 168, 1, 7);
 IPAddress myDns(192, 168, 0, 1);
 
 // initialize the library instance:
@@ -106,7 +106,7 @@ void loop() {
   // if ten seconds have passed since your last connection,
   // then connect again and send data:
   if (millis() - lastConnectionTime > postingInterval) {
-    httpRequest();
+    //httpRequest();
   }
   // give the web browser time to receive the data
   delay(1);
