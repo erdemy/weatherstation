@@ -48,8 +48,8 @@ public class Weather {
         temperatureCelsius = weatherData.getT();
         windDirection = weatherData.getWa();
         windDirection = (windDirection + 50) % 360;
-        windSpeedOneMinuteMs = weatherData.getWs() * 0.85;
-        windGustSpeedOneMinuteMs = weatherData.getGs() * 0.85;
+        windSpeedOneMinuteMs = weatherData.getWs();
+        windGustSpeedOneMinuteMs = weatherData.getGs();
     }
 /*
     public void setResult(String result) {
@@ -91,7 +91,7 @@ public class Weather {
      * @return one minute average speed
      */
     public double getWindSpeedAverageKnot() {
-        return windSpeedOneMinuteMs * 1.872;
+        return windSpeedOneMinuteMs * 1.94384;
     }
 
     /**
@@ -106,7 +106,7 @@ public class Weather {
 
     public double getWindSpeedMax() {
         //return windSpeedFiveMinutesMs * 0.8689762;
-        return windGustSpeedOneMinuteMs * 1.872;
+        return windGustSpeedOneMinuteMs * 1.94384;
     }
 
     public double getWindSpeedMaxMeters() {
