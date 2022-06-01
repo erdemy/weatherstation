@@ -47,7 +47,8 @@ public class Weather {
     public void setWeatherData(WeatherData weatherData) {
         temperatureCelsius = weatherData.getT();
         windDirection = weatherData.getWa();
-        windDirection = (windDirection + 250) % 360;
+        //windDirection = (windDirection + 50) % 360;
+        windDirection = 360 - windDirection;
         windSpeedOneMinuteMs = weatherData.getWs() * 1.5;
         windGustSpeedOneMinuteMs = weatherData.getGs() * 1.5;
     }
